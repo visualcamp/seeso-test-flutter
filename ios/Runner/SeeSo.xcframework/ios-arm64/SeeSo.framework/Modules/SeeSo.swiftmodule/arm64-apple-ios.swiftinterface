@@ -1,0 +1,227 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.6 (swiftlang-5.6.0.323.62 clang-1316.0.20.8)
+// swift-module-flags: -target arm64-apple-ios11.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SeeSo
+import AVFoundation
+import AVKit
+import CoreML
+import CoreMedia
+import CoreMotion
+import Foundation
+@_exported import SeeSo
+import Swift
+import UIKit
+import _Concurrency
+@objc public protocol UserStatusDelegate : SeeSo.GazeTrackerDelegate {
+  @objc optional func onAttention(timestampBegin: Swift.Int, timestampEnd: Swift.Int, score: Swift.Double)
+  @available(iOS, deprecated: 2.5.0, renamed: "onAttention")
+  @objc optional func onAttension(timestampBegin: Swift.Int, timestampEnd: Swift.Int, score: Swift.Double)
+  @objc optional func onBlink(timestamp: Swift.Int, isBlinkLeft: Swift.Bool, isBlinkRight: Swift.Bool, isBlink: Swift.Bool, eyeOpenness: Swift.Double)
+  @objc optional func onDrowsiness(timestamp: Swift.Int, isDrowsiness: Swift.Bool)
+}
+@_inheritsConvenienceInitializers @objc public class UserStatusOption : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc public func isUseAttention() -> Swift.Bool
+  @available(iOS, deprecated: 2.5.0, renamed: "isUseAttention")
+  @objc public func isUseAttension() -> Swift.Bool
+  @objc public func isUseBlink() -> Swift.Bool
+  @objc public func isUseDrowsiness() -> Swift.Bool
+  @objc public func useAttention()
+  @objc public func useBlink()
+  @objc public func useDrowsiness()
+  @objc public func useAll()
+  @objc deinit
+}
+@objc public protocol InitializationDelegate : SeeSo.GazeTrackerDelegate {
+  @objc func onInitialized(tracker: SeeSo.GazeTracker?, error: SeeSo.InitializationError)
+}
+@objc public enum InitializationError : Swift.Int {
+  case ERROR_NONE = 0
+  case ERROR_INIT = 1
+  case ERROR_CAMERA_PERMISSION = 2
+  case AUTH_INVALID_KEY = 3
+  case AUTH_INVALID_ENV_USED_DEV_IN_PROD
+  case AUTH_INVALID_ENV_USED_PROD_IN_DEV
+  case AUTH_INVALID_PACKAGE_NAME
+  case AUTH_INVALID_APP_SIGNATURE
+  case AUTH_EXCEEDED_FREE_TIER
+  case AUTH_DEACTIVATED_KEY
+  case AUTH_INVALID_ACCESS
+  case AUTH_UNKNOWN_ERROR
+  case AUTH_SERVER_ERROR
+  case AUTH_CANNOT_FIND_HOST
+  case AUTH_WRONG_LOCAL_TIME
+  case AUTH_INVALID_KEY_FORMAT
+  case AUTH_EXPIRED_KEY
+  case ERROR_NOT_ADVANCED_TIER
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class GazeInfo : ObjectiveC.NSObject {
+  @objc final public let x: Swift.Double
+  @objc final public let y: Swift.Double
+  @objc final public let timestamp: Swift.Double
+  @objc final public let trackingState: SeeSo.TrackingState
+  @objc final public let eyeMovementState: SeeSo.EyeMovementState
+  @objc final public let screenState: SeeSo.ScreenState
+  @objc deinit
+}
+@objc public protocol StatusDelegate : SeeSo.GazeTrackerDelegate {
+  @objc func onStarted()
+  @objc func onStopped(error: SeeSo.StatusError)
+}
+@objc public enum StatusError : Swift.Int {
+  case ERROR_NONE = 0
+  case ERROR_CAMERA_START = 1
+  case ERROR_CAMERA_INTERRUPT = 2
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class OneEuroFilterManager : ObjectiveC.NSObject {
+  @objc public static let DEFAULT_COUNT: Swift.Int
+  @objc public static let DEFAULT_FREQUENCY: Swift.Double
+  @objc public static let DEFAULT_MIN_CUT_OFF: Swift.Double
+  @objc public static let DEFAULT_BETA: Swift.Double
+  @objc public static let DEFAULT_D_CUT_OFF: Swift.Double
+  @objc public init(_ count: Swift.Int = DEFAULT_COUNT, _ freq: Swift.Double = DEFAULT_FREQUENCY, _ minCutOff: Swift.Double = DEFAULT_MIN_CUT_OFF, _ beta: Swift.Double = DEFAULT_BETA, _ dCutOff: Swift.Double = DEFAULT_D_CUT_OFF)
+  @objc public func filterValues(timestamp: Swift.Double, val: [Swift.Double]) -> Swift.Bool
+  @objc public func getFilteredValues() -> [Swift.Double]
+  @objc deinit
+}
+@objc public enum AccuracyCriteria : Swift.Int, Swift.Codable {
+  case DEFAULT = 0
+  case LOW = 1
+  case HIGH = 2
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public protocol GazeDelegate : SeeSo.GazeTrackerDelegate {
+  @objc func onGaze(gazeInfo: SeeSo.GazeInfo)
+}
+@objc public enum TrackingState : Swift.Int {
+  case SUCCESS = 0
+  case LOW_CONFIDENCE = 1
+  case UNSUPPORTED = 2
+  case FACE_MISSING = 3
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ScreenState : Swift.Int {
+  case INSIDE_OF_SCREEN = 0
+  case OUTSIDE_OF_SCREEN = 1
+  case UNKONW = 2
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public protocol CalibrationDelegate : SeeSo.GazeTrackerDelegate {
+  @objc func onCalibrationNextPoint(x: Swift.Double, y: Swift.Double)
+  @objc func onCalibrationProgress(progress: Swift.Double)
+  @objc func onCalibrationFinished(calibrationData: [Swift.Double])
+}
+@objc public enum CalibrationMode : Swift.Int {
+  case DEFAULT = 0
+  case ONE_POINT = 1
+  case FIVE_POINT = 5
+  case SIX_POINT = 6
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public protocol GazeTrackerDelegate {
+}
+@objc public protocol ImageDelegate : SeeSo.GazeTrackerDelegate {
+  @objc func onImage(timestamp: Swift.Double, image: CoreMedia.CMSampleBuffer)
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class GazeTracker : ObjectiveC.NSObject {
+  @objc weak public var statusDelegate: SeeSo.StatusDelegate?
+  @objc weak public var gazeDelegate: SeeSo.GazeDelegate?
+  @objc weak public var calibrationDelegate: SeeSo.CalibrationDelegate?
+  @objc weak public var imageDelegate: SeeSo.ImageDelegate?
+  @objc weak public var userStatusDelegate: SeeSo.UserStatusDelegate?
+  @objc public static func initGazeTracker(license: Swift.String, delegate: SeeSo.InitializationDelegate, option: SeeSo.UserStatusOption? = nil)
+  @objc public static func deinitGazeTracker(tracker: SeeSo.GazeTracker?)
+  @objc public func startTracking()
+  @objc public func stopTracking()
+  @objc public func isTracking() -> Swift.Bool
+  @objc public func setTrackingFPS(fps: Swift.Int) -> Swift.Bool
+  @objc public func isCalibrating() -> Swift.Bool
+  @objc public func startCalibration(mode: SeeSo.CalibrationMode = .DEFAULT, criteria: SeeSo.AccuracyCriteria = .DEFAULT, region: CoreGraphics.CGRect = UIScreen.main.bounds) -> Swift.Bool
+  @objc public func setCalibrationData(calibrationData: [Swift.Double]) -> Swift.Bool
+  @objc public func stopCalibration()
+  @objc public func startCollectSamples() -> Swift.Bool
+  @objc public func setCameraPreview(preview: UIKit.UIView)
+  @objc public func removeCameraPreview()
+  @objc public func setDelegates(statusDelegate: SeeSo.StatusDelegate?, gazeDelegate: SeeSo.GazeDelegate?, calibrationDelegate: SeeSo.CalibrationDelegate?, imageDelegate: SeeSo.ImageDelegate?, userStatusDelegate: SeeSo.UserStatusDelegate? = nil)
+  @objc public func setAttentionInterval(interval: Swift.Int)
+  @objc public func getAttentionScore() -> Swift.Double
+  @objc public func setAttentionRegion(region: CoreGraphics.CGRect)
+  @objc public func getAttentionRegion() -> CoreGraphics.CGRect
+  @objc public func removeAttentionRegion()
+  @objc public static func getFrameworkVersion() -> Swift.String
+  @objc deinit
+}
+@objc public enum EyeMovementState : Swift.Int {
+  case FIXATION = 0
+  case SACCADE = 2
+  case UNKONW = 3
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension SeeSo.InitializationError : Swift.Equatable {}
+extension SeeSo.InitializationError : Swift.Hashable {}
+extension SeeSo.InitializationError : Swift.RawRepresentable {}
+extension SeeSo.StatusError : Swift.Equatable {}
+extension SeeSo.StatusError : Swift.Hashable {}
+extension SeeSo.StatusError : Swift.RawRepresentable {}
+extension SeeSo.AccuracyCriteria : Swift.Equatable {}
+extension SeeSo.AccuracyCriteria : Swift.Hashable {}
+extension SeeSo.AccuracyCriteria : Swift.RawRepresentable {}
+extension SeeSo.TrackingState : Swift.Equatable {}
+extension SeeSo.TrackingState : Swift.Hashable {}
+extension SeeSo.TrackingState : Swift.RawRepresentable {}
+extension SeeSo.ScreenState : Swift.Equatable {}
+extension SeeSo.ScreenState : Swift.Hashable {}
+extension SeeSo.ScreenState : Swift.RawRepresentable {}
+extension SeeSo.CalibrationMode : Swift.Equatable {}
+extension SeeSo.CalibrationMode : Swift.Hashable {}
+extension SeeSo.CalibrationMode : Swift.RawRepresentable {}
+extension SeeSo.EyeMovementState : Swift.Equatable {}
+extension SeeSo.EyeMovementState : Swift.Hashable {}
+extension SeeSo.EyeMovementState : Swift.RawRepresentable {}
