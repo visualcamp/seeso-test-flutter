@@ -1,0 +1,11 @@
+framework module SeeSo {
+  umbrella header "SeeSo.h"
+
+  export *
+  module * { export * }
+}
+
+module SeeSo.Swift {
+    header "SeeSo-swift.h"
+    requires objc
+}
