@@ -1,8 +1,6 @@
-import 'dart:ffi';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// ignore: depend_on_referenced_packages
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
@@ -48,7 +46,7 @@ class _RandomWordsState extends State<RandomWords> {
         });
       } else if (call.method == "setCurrentState") {
         final result = call.arguments as String;
-        debugPrint('stagte : $result');
+        debugPrint('state : $result');
       }
     });
   }
