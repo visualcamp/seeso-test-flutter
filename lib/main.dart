@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Startup Name Genearator',
+      title: 'GazeTracking Demo',
       home: RandomWords(),
     );
   }
@@ -27,14 +27,20 @@ class RandomWords extends StatefulWidget {
   State<RandomWords> createState() => _RandomWordsState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
+class GazeTrcking extends StatefulWidget {
+  const GazeTrcking({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _GazeTrackingState();
+}
+
+class _GazeTrackingState extends State<GazeTrcking> {
   static const plaform = MethodChannel('samples.flutter.dev/tracker');
   static const circleSize = 20.0;
   var _pointX = 0.0;
   var _pointY = 0.0;
 
-  _RandomWordsState() {
-    debugPrint('init');
+  _GazeTrackingState() {
     plaform.setMethodCallHandler((call) async {
       if (call.method == "setGazeXY") {
         debugPrint('setGazeXy');
@@ -44,7 +50,30 @@ class _RandomWordsState extends State<RandomWords> {
           _pointX = xy[0] as double;
           _pointY = xy[1] as double;
         });
-      } else if (call.method == "setCurrentState") {
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+        left: _pointX - circleSize / 2.0,
+        top: _pointY - circleSize / 2.0,
+        child: Container(
+            width: circleSize,
+            height: circleSize,
+            decoration: const BoxDecoration(
+                color: Colors.red, shape: BoxShape.circle)));
+  }
+}
+
+class _RandomWordsState extends State<RandomWords> {
+  static const plaform = MethodChannel('samples.flutter.dev/tracker');
+
+  _RandomWordsState() {
+    debugPrint('init');
+    plaform.setMethodCallHandler((call) async {
+      if (call.method == "setCurrentState") {
         final result = call.arguments as String;
         debugPrint('state : $result');
       }
@@ -70,10 +99,9 @@ class _RandomWordsState extends State<RandomWords> {
     return Stack(
       children: <Widget>[
         Container(
-            constraints: const BoxConstraints.expand(),
-            child: SizedBox(
-              width: 120,
-              height: 30,
+          constraints: const BoxConstraints.expand(),
+          child: Container(
+              padding: const EdgeInsets.all(20),
               child: OutlinedButton(
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all(RoundedRectangleBorder(
@@ -83,16 +111,9 @@ class _RandomWordsState extends State<RandomWords> {
                   _handleCameraAndMic();
                 },
                 child: const Text('start'),
-              ),
-            )),
-        Positioned(
-            left: _pointX - circleSize / 2.0,
-            top: _pointY - circleSize / 2.0,
-            child: Container(
-                width: circleSize,
-                height: circleSize,
-                decoration: const BoxDecoration(
-                    color: Colors.red, shape: BoxShape.circle)))
+              )),
+        ),
+        const GazeTrcking(),
       ],
     );
   }
