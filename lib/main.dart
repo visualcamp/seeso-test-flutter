@@ -15,16 +15,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'GazeTracking Demo',
-      home: RandomWords(),
+      home: AppView(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
-  const RandomWords({Key? key}) : super(key: key);
+class AppView extends StatefulWidget {
+  const AppView({Key? key}) : super(key: key);
 
   @override
-  State<RandomWords> createState() => _RandomWordsState();
+  State<AppView> createState() => _AppViewState();
 }
 
 class GazeTrcking extends StatefulWidget {
@@ -32,6 +32,74 @@ class GazeTrcking extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _GazeTrackingState();
+}
+
+class TitleWidget extends StatelessWidget {
+  const TitleWidget({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Title(
+                  color: const Color(0xFF000000),
+                  child: const Text(
+                    'SeeSo Sample',
+                    style: TextStyle(
+                        color: Colors.white, decoration: TextDecoration.none),
+                  )),
+              Divider(
+                color: Colors.grey[800],
+              ),
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  "Follow steps below to experience gaze tracking",
+                  style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16),
+                ),
+              ),
+            ]));
+  }
+}
+
+class Initialized extends StatefulWidget {
+  const Initialized({Key? key}) : super(key: key);
+  @override
+  State<StatefulWidget> createState() => _InitializedState();
+}
+
+class _InitializedState extends State<Initialized> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        const Text('You need to init GazeTracker first',
+            style: TextStyle(
+                color: Colors.white24,
+                fontSize: 10,
+                decoration: TextDecoration.none)),
+        Container(
+          height: 10,
+        ),
+        Container(
+          width: double.maxFinite,
+          color: Colors.white12,
+          child: TextButton(
+              onPressed: () {},
+              child: const Text(
+                'Initialized',
+                style: TextStyle(color: Colors.white),
+              )),
+        ),
+      ],
+    );
+  }
 }
 
 class _GazeTrackingState extends State<GazeTrcking> {
@@ -67,14 +135,19 @@ class _GazeTrackingState extends State<GazeTrcking> {
   }
 }
 
-class _RandomWordsState extends State<RandomWords> {
+class _AppViewState extends State<AppView> {
   static const plaform = MethodChannel('samples.flutter.dev/tracker');
-
-  _RandomWordsState() {
+  var isTracking = false;
+  _AppViewState() {
     debugPrint('init');
     plaform.setMethodCallHandler((call) async {
       if (call.method == "setCurrentState") {
         final result = call.arguments as String;
+        if (result == "initSuccess") {
+          setState(() {
+            isTracking = true;
+          });
+        }
         debugPrint('state : $result');
       }
     });
@@ -86,9 +159,9 @@ class _RandomWordsState extends State<RandomWords> {
     debugPrint('debug: $result');
   }
 
-  Future<void> _handleCameraAndMic() async {
+  Future<void> _handleCamera() async {
     final status = await Permission.camera.request();
-    print(status);
+    debugPrint(status.isGranted.toString());
     if (status.isGranted) {
       _startLogic();
     }
@@ -98,22 +171,30 @@ class _RandomWordsState extends State<RandomWords> {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Container(
-          constraints: const BoxConstraints.expand(),
+        SafeArea(
           child: Container(
-              padding: const EdgeInsets.all(20),
-              child: OutlinedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0))),
-                ),
-                onPressed: () {
-                  _handleCameraAndMic();
-                },
-                child: const Text('start'),
+              color: Colors.white10,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const TitleWidget(),
+                  const Initialized(),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                            width: 1.0, color: Colors.white70)),
+                    onPressed: () {
+                      if (!isTracking) _handleCamera();
+                    },
+                    child: const Text(
+                      'start',
+                      style: TextStyle(color: Colors.white70, fontSize: 24),
+                    ),
+                  )
+                ],
               )),
         ),
-        const GazeTrcking(),
+        if (isTracking) const GazeTrcking(),
       ],
     );
   }
