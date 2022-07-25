@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
@@ -68,8 +69,8 @@ class _AppViewState extends State<AppView> {
         ),
         if (consumer.state == GazeTrackerState.start) const GazePointWidget(),
         if (consumer.state == GazeTrackerState.initializing)
-          Center(
-            child: const SpinKitRotatingCircle(
+          const Center(
+            child: SpinKitRotatingCircle(
               color: Colors.white60,
               size: 50.0,
             ),
