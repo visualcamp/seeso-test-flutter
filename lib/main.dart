@@ -8,14 +8,16 @@ import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
 
 // model
 import 'package:test_flutter/src/model/app_stage.dart';
+import 'package:test_flutter/src/ui/calibration_widget.dart';
 
 // widget
 // ignore: depend_on_referenced_packages
 import 'package:test_flutter/src/ui/camera_handle_widget.dart';
 import 'package:test_flutter/src/ui/gaze_point_widget.dart';
-import 'package:test_flutter/src/ui/initialized_widget.dart';
+import 'package:test_flutter/src/ui/initializing_widget.dart';
 import 'package:test_flutter/src/ui/loading_circle_widget.dart';
 import 'package:test_flutter/src/ui/title_widget.dart';
+import 'package:test_flutter/src/ui/initialized_widget.dart';
 import 'package:test_flutter/src/ui/tracking_mode_widget.dart';
 
 void main() {
@@ -60,11 +62,14 @@ class _AppViewState extends State<AppView> {
                         case GazeTrackerState.first:
                           return const CameraHandleWidget();
                         case GazeTrackerState.idle:
-                          return const InitializedWidget();
+                          return const InitializingWidget();
                         case GazeTrackerState.initialized:
+                          return const InitializedWidget();
+                        case GazeTrackerState.start:
+                        case GazeTrackerState.calibrating:
                           return const TrackingModeWidget();
                         default:
-                          return const InitializedWidget();
+                          return const InitializingWidget();
                       }
                     },
                   ),
@@ -74,6 +79,8 @@ class _AppViewState extends State<AppView> {
         if (consumer.state == GazeTrackerState.start) const GazePointWidget(),
         if (consumer.state == GazeTrackerState.initializing)
           const LoadingCircleWidget(),
+        if (consumer.state == GazeTrackerState.calibrating)
+          const CalibrationWidget(),
       ],
     );
   }

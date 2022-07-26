@@ -7,10 +7,18 @@ import 'package:test_flutter/src/model/app_stage.dart';
 class GazeTrackerProvider with ChangeNotifier {
   dynamic state;
   final _channel = const MethodChannel('samples.flutter.dev/tracker');
+
+  // gaze X,Y
   var point_x = 0.0;
   var point_y = 0.0;
-  bool isUserOption = false;
 
+  // calibration
+  double progress = 0.0;
+  var caliX = 0.0;
+  var caliY = 0.0;
+
+  bool isUserOption = false;
+  int calibrationType = 5;
   GazeTrackerProvider() {
     state = GazeTrackerState.first;
     setMessageHandler();
@@ -33,6 +41,11 @@ class GazeTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void changeCalibrationType(int cType) {
+    calibrationType = cType;
+    notifyListeners();
+  }
+
   void _setGazeXY(double x, double y) {
     point_x = x;
     point_y = y;
@@ -40,8 +53,9 @@ class GazeTrackerProvider with ChangeNotifier {
 
   void _setGazeTrackerStateString(String stateString) {
     if (stateString == "initSuccess") {
-      state = GazeTrackerState.initialized;
-      notifyListeners();
+      _setTrackerState(GazeTrackerState.initialized);
+    } else if (stateString == "startTracking") {
+      _setTrackerState(GazeTrackerState.start);
     }
     debugPrint('state : $stateString');
   }
@@ -49,8 +63,7 @@ class GazeTrackerProvider with ChangeNotifier {
   Future<void> checkCamera() async {
     final isGrated = await Permission.camera.isGranted;
     if (isGrated) {
-      state = GazeTrackerState.idle;
-      notifyListeners();
+      _setTrackerState(GazeTrackerState.idle);
     }
   }
 
@@ -58,27 +71,42 @@ class GazeTrackerProvider with ChangeNotifier {
     final status = await Permission.camera.request();
     debugPrint(status.isGranted.toString());
     if (status.isGranted) {
-      state = GazeTrackerState.idle;
-      notifyListeners();
+      _setTrackerState(GazeTrackerState.idle);
     }
   }
 
   Future<void> initGazeTracker() async {
-    state = GazeTrackerState.initializing;
-    notifyListeners();
+    _setTrackerState(GazeTrackerState.initializing);
     final String result = await _channel.invokeMethod("startTracking",
         {'license': 'dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox'});
 
     if (result == "initSuccess") {
-      state = GazeTrackerState.initialized;
-      notifyListeners();
+      _setTrackerState(GazeTrackerState.initialized);
     } else {
       debugPrint('debug: $result');
     }
   }
 
-  Future<void> deinitGazeTracker() async {
-    state = GazeTrackerState.idle;
+  void _setTrackerState(GazeTrackerState state) {
+    this.state = state;
     notifyListeners();
+  }
+
+  void startTracking() {
+    _channel.invokeMethod("startTracking");
+    _setTrackerState(GazeTrackerState.start);
+  }
+
+  void stopTracking() {
+    //_channel.invokeMethod("stopTracking");
+    _setTrackerState(GazeTrackerState.initialized);
+  }
+
+  Future<void> deinitGazeTracker() async {
+    _setTrackerState(GazeTrackerState.idle);
+  }
+
+  void startCalibration() {
+    _setTrackerState(GazeTrackerState.calibrating);
   }
 }
