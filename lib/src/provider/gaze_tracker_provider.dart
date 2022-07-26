@@ -76,4 +76,9 @@ class GazeTrackerProvider with ChangeNotifier {
       debugPrint('debug: $result');
     }
   }
+
+  Future<void> deinitGazeTracker() async {
+    state = GazeTrackerState.idle;
+    notifyListeners();
+  }
 }

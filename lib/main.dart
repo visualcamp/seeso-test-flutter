@@ -14,7 +14,9 @@ import 'package:test_flutter/src/model/app_stage.dart';
 import 'package:test_flutter/src/ui/camera_handle_widget.dart';
 import 'package:test_flutter/src/ui/gaze_point_widget.dart';
 import 'package:test_flutter/src/ui/initialized_widget.dart';
+import 'package:test_flutter/src/ui/loading_circle_widget.dart';
 import 'package:test_flutter/src/ui/title_widget.dart';
+import 'package:test_flutter/src/ui/tracking_mode_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,8 +61,10 @@ class _AppViewState extends State<AppView> {
                           return const CameraHandleWidget();
                         case GazeTrackerState.idle:
                           return const InitializedWidget();
+                        case GazeTrackerState.initialized:
+                          return const TrackingModeWidget();
                         default:
-                          return const CameraHandleWidget();
+                          return const InitializedWidget();
                       }
                     },
                   ),
@@ -69,12 +73,7 @@ class _AppViewState extends State<AppView> {
         ),
         if (consumer.state == GazeTrackerState.start) const GazePointWidget(),
         if (consumer.state == GazeTrackerState.initializing)
-          const Center(
-            child: SpinKitRotatingCircle(
-              color: Colors.white60,
-              size: 50.0,
-            ),
-          )
+          const LoadingCircleWidget(),
       ],
     );
   }
