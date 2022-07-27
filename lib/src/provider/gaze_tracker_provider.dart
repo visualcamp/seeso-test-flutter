@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
@@ -7,7 +9,7 @@ import 'package:test_flutter/src/model/app_stage.dart';
 class GazeTrackerProvider with ChangeNotifier {
   dynamic state;
   final _channel = const MethodChannel('samples.flutter.dev/tracker');
-
+  String failedReason = "";
   // gaze X,Y
   var point_x = 0.0;
   var point_y = 0.0;
@@ -16,9 +18,11 @@ class GazeTrackerProvider with ChangeNotifier {
   double progress = 0.0;
   var caliX = 0.0;
   var caliY = 0.0;
+  bool hasCaliData = false;
 
   bool isUserOption = false;
   int calibrationType = 5;
+  bool savedCalibrationData = false;
   GazeTrackerProvider() {
     state = GazeTrackerState.first;
     setMessageHandler();
@@ -75,16 +79,18 @@ class GazeTrackerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> initGazeTracker() async {
+  Future<bool> initGazeTracker() async {
     _setTrackerState(GazeTrackerState.initializing);
     final String result = await _channel.invokeMethod("startTracking",
         {'license': 'dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox'});
-
+    debugPrint('result : $result');
     if (result == "initSuccess") {
       _setTrackerState(GazeTrackerState.initialized);
+      return true;
     } else {
-      debugPrint('debug: $result');
+      failedReason = result;
     }
+    return false;
   }
 
   void _setTrackerState(GazeTrackerState state) {
@@ -107,6 +113,38 @@ class GazeTrackerProvider with ChangeNotifier {
   }
 
   void startCalibration() {
+    final pixelRatio = window.devicePixelRatio;
+    //Size in logical pixels
+    final logicalScreenSize = window.physicalSize / pixelRatio;
+    final logicalWidth = logicalScreenSize.width;
+    final logicalHeight = logicalScreenSize.height;
     _setTrackerState(GazeTrackerState.calibrating);
+    Future.delayed(Duration(milliseconds: 1500), () {
+      caliX = logicalWidth / 2;
+      caliY = logicalHeight / 2;
+      notifyListeners();
+      _setProgress();
+    });
+  }
+
+  void _setProgress() {
+    Future.delayed(Duration(milliseconds: 1500), () {
+      progress = 0.5;
+      notifyListeners();
+      _finishedCalibration();
+    });
+  }
+
+  void _finishedCalibration() {
+    Future.delayed(Duration(milliseconds: 1500), () {
+      hasCaliData = true;
+      _setTrackerState(GazeTrackerState.start);
+    });
+  }
+
+  void saveCalibrationData() {
+    hasCaliData = false;
+    savedCalibrationData = true;
+    notifyListeners();
   }
 }

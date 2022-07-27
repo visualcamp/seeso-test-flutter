@@ -5,9 +5,20 @@ import 'package:test_flutter/src/model/app_stage.dart';
 
 import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
 import 'deinit_mode_widget.dart';
+import 'saved_dialog_widget.dart';
 
 class TrackingModeWidget extends StatelessWidget {
   const TrackingModeWidget({Key? key}) : super(key: key);
+
+  void _showSavedDialog(BuildContext context) {
+    var state = Provider.of<GazeTrackerProvider>(context, listen: false);
+    showCupertinoDialog(
+        context: context,
+        builder: (_) => ChangeNotifierProvider<GazeTrackerProvider>.value(
+              value: state,
+              child: const SaveDataDialogWidget(),
+            ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +119,26 @@ class TrackingModeWidget extends StatelessWidget {
             ],
           ),
         ),
+        if (consumer.hasCaliData)
+          Container(
+            width: double.maxFinite,
+            height: 1,
+            color: Colors.white24,
+          ),
+        if (consumer.hasCaliData)
+          Container(
+            width: double.maxFinite,
+            color: Colors.white12,
+            child: TextButton(
+                onPressed: () {
+                  consumer.saveCalibrationData();
+                  _showSavedDialog(context);
+                },
+                child: const Text(
+                  'Save Calibration Data to local',
+                  style: TextStyle(color: Colors.white),
+                )),
+          ),
         const Text(
             '(Calibration only can be done while gae tracking is activated)',
             style: TextStyle(

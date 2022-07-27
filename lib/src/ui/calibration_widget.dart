@@ -29,6 +29,8 @@ class CalibrationWidget extends StatelessWidget {
               ],
             )),
             Positioned(
+              left: consumer.caliX - 24,
+              top: consumer.caliY - 24,
               child: CircularPercentIndicator(
                   radius: 24,
                   lineWidth: 2,

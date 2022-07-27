@@ -46,7 +46,6 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final consumer = Provider.of<GazeTrackerProvider>(context);
-
     return Stack(
       children: <Widget>[
         SafeArea(

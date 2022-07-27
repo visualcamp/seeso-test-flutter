@@ -2,13 +2,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
+import 'package:test_flutter/src/ui/initialized_fail_dialog_widget.dart';
 
 class InitializingWidget extends StatelessWidget {
   const InitializingWidget({Key? key}) : super(key: key);
+  void _initializing(BuildContext context) async {
+    final consumer = Provider.of<GazeTrackerProvider>(context, listen: false);
+    bool result = await consumer.initGazeTracker();
+    if (!result) {
+      showCupertinoDialog(
+          context: context,
+          builder: (_) => ChangeNotifierProvider<GazeTrackerProvider>.value(
+                value: consumer,
+                child: const InitializedFailDialog(),
+              ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool isSwitched = false;
     final consumer = Provider.of<GazeTrackerProvider>(context);
     return Column(
       children: <Widget>[
@@ -25,7 +37,7 @@ class InitializingWidget extends StatelessWidget {
           color: Colors.white12,
           child: TextButton(
               onPressed: () {
-                consumer.initGazeTracker();
+                _initializing(context);
               },
               child: const Text(
                 'Initialize   GazzeTracker',
