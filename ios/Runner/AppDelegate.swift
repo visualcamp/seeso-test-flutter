@@ -43,7 +43,6 @@ import SeeSo
       gazeTracker = tracker
       trackerChannel?.invokeMethod("setCurrentState", arguments: "initSuccess")
       gazeTracker?.gazeDelegate = self
-      gazeTracker?.startTracking()
     }else {
       trackerChannel?.invokeMethod("setCurrentState", arguments: "init Failed : " + error.description)
       print("hey")

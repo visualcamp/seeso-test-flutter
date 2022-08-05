@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 // ignore: depend_on_referenced_packages
-import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+
+// provider
+import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
+
+// model
+import 'package:test_flutter/src/model/app_stage.dart';
+import 'package:test_flutter/src/provider/user_extand_provider.dart';
+import 'package:test_flutter/src/ui/calibration_widget.dart';
+
+// widget
+// ignore: depend_on_referenced_packages
+import 'package:test_flutter/src/ui/camera_handle_widget.dart';
+import 'package:test_flutter/src/ui/gaze_point_widget.dart';
+import 'package:test_flutter/src/ui/initializing_widget.dart';
+import 'package:test_flutter/src/ui/loading_circle_widget.dart';
+import 'package:test_flutter/src/ui/title_widget.dart';
+import 'package:test_flutter/src/ui/initialized_widget.dart';
+import 'package:test_flutter/src/ui/tracking_mode_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,90 +27,63 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Startup Name Genearator',
-      home: RandomWords(),
-    );
+    return MaterialApp(
+        home: MultiProvider(providers: [
+      ChangeNotifierProvider(
+          create: (BuildContext context) => GazeTrackerProvider()),
+      ChangeNotifierProvider(
+          create: (BuildContext context) => UserExtandProvider())
+    ], child: const AppView()));
   }
 }
 
-class RandomWords extends StatefulWidget {
-  const RandomWords({Key? key}) : super(key: key);
-
+class AppView extends StatefulWidget {
+  const AppView({Key? key}) : super(key: key);
   @override
-  State<RandomWords> createState() => _RandomWordsState();
+  State<AppView> createState() => _AppViewState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
-  static const plaform = MethodChannel('samples.flutter.dev/tracker');
-  static const circleSize = 20.0;
-  var _pointX = 0.0;
-  var _pointY = 0.0;
-
-  _RandomWordsState() {
-    debugPrint('init');
-    plaform.setMethodCallHandler((call) async {
-      if (call.method == "setGazeXY") {
-        debugPrint('setGazeXy');
-        final xy = call.arguments;
-        debugPrint('xy $xy.count');
-        setState(() {
-          _pointX = xy[0] as double;
-          _pointY = xy[1] as double;
-        });
-      } else if (call.method == "setCurrentState") {
-        final result = call.arguments as String;
-        debugPrint('state : $result');
-      }
-    });
-  }
-
-  Future<void> _startLogic() async {
-    final String result = await plaform.invokeMethod("startTracking",
-        {'license': 'dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox'});
-    debugPrint('debug: $result');
-  }
-
-  Future<void> _handleCameraAndMic() async {
-    final status = await Permission.camera.request();
-    print(status);
-    if (status.isGranted) {
-      _startLogic();
-    }
-  }
-
+class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
+    final consumer = Provider.of<GazeTrackerProvider>(context);
     return Stack(
       children: <Widget>[
-        Container(
-            constraints: const BoxConstraints.expand(),
-            child: SizedBox(
-              width: 120,
-              height: 30,
-              child: OutlinedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0))),
-                ),
-                onPressed: () {
-                  _handleCameraAndMic();
-                },
-                child: const Text('start'),
-              ),
-            )),
-        Positioned(
-            left: _pointX - circleSize / 2.0,
-            top: _pointY - circleSize / 2.0,
-            child: Container(
-                width: circleSize,
-                height: circleSize,
-                decoration: const BoxDecoration(
-                    color: Colors.red, shape: BoxShape.circle)))
+        SafeArea(
+          child: Container(
+              color: Colors.white10,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const TitleWidget(),
+                  Consumer<GazeTrackerProvider>(
+                    builder: (context, gazetracker, child) {
+                      switch (gazetracker.state) {
+                        case GazeTrackerState.first:
+                          return const CameraHandleWidget();
+                        case GazeTrackerState.idle:
+                          return const InitializingWidget();
+                        case GazeTrackerState.initialized:
+                          return const InitializedWidget();
+                        case GazeTrackerState.start:
+                        case GazeTrackerState.calibrating:
+                          return const TrackingModeWidget();
+                        default:
+                          return const InitializingWidget();
+                      }
+                    },
+                  ),
+                ],
+              )),
+        ),
+        if (consumer.state == GazeTrackerState.start) const GazePointWidget(),
+        if (consumer.state == GazeTrackerState.initializing)
+          const LoadingCircleWidget(),
+        if (consumer.state == GazeTrackerState.calibrating)
+          const CalibrationWidget(),
       ],
     );
   }
