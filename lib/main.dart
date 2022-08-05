@@ -8,6 +8,7 @@ import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
 
 // model
 import 'package:test_flutter/src/model/app_stage.dart';
+import 'package:test_flutter/src/provider/user_extand_provider.dart';
 import 'package:test_flutter/src/ui/calibration_widget.dart';
 
 // widget
@@ -29,10 +30,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GazeTrackerProvider(),
-      child: const MaterialApp(home: AppView()),
-    );
+    return MaterialApp(
+        home: MultiProvider(providers: [
+      ChangeNotifierProvider(
+          create: (BuildContext context) => GazeTrackerProvider()),
+      ChangeNotifierProvider(
+          create: (BuildContext context) => UserExtandProvider())
+    ], child: const AppView()));
   }
 }
 

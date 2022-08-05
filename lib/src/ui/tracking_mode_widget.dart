@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:test_flutter/src/model/app_stage.dart';
 
 import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
+import 'package:test_flutter/src/ui/user_status_widget.dart';
 import 'deinit_mode_widget.dart';
 import 'saved_dialog_widget.dart';
 
@@ -145,6 +146,10 @@ class TrackingModeWidget extends StatelessWidget {
                 color: Colors.white24,
                 fontSize: 10,
                 decoration: TextDecoration.none)),
+        Container(
+          height: 10,
+        ),
+        if (consumer.isUserOption) const UserSatatusWidget(),
       ],
     );
   }

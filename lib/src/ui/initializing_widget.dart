@@ -8,8 +8,7 @@ class InitializingWidget extends StatelessWidget {
   const InitializingWidget({Key? key}) : super(key: key);
   void _initializing(BuildContext context) async {
     final consumer = Provider.of<GazeTrackerProvider>(context, listen: false);
-    bool result = await consumer.initGazeTracker();
-    if (!result) {
+    if (consumer.failedReason != null) {
       showCupertinoDialog(
           context: context,
           builder: (_) => ChangeNotifierProvider<GazeTrackerProvider>.value(
@@ -37,6 +36,7 @@ class InitializingWidget extends StatelessWidget {
           color: Colors.white12,
           child: TextButton(
               onPressed: () {
+                consumer.initGazeTracker();
                 _initializing(context);
               },
               child: const Text(

@@ -9,7 +9,7 @@ import 'package:test_flutter/src/model/app_stage.dart';
 class GazeTrackerProvider with ChangeNotifier {
   dynamic state;
   final _channel = const MethodChannel('samples.flutter.dev/tracker');
-  String failedReason = "";
+  String? failedReason;
   // gaze X,Y
   var point_x = 0.0;
   var point_y = 0.0;
@@ -19,9 +19,12 @@ class GazeTrackerProvider with ChangeNotifier {
   var caliX = 0.0;
   var caliY = 0.0;
   bool hasCaliData = false;
-
+  double attention = 0.0;
   bool isUserOption = false;
+
   int calibrationType = 5;
+  bool isDrowsiness = false;
+  bool isBlink = false;
   bool savedCalibrationData = false;
   GazeTrackerProvider() {
     state = GazeTrackerState.first;
@@ -88,7 +91,7 @@ class GazeTrackerProvider with ChangeNotifier {
       _setTrackerState(GazeTrackerState.initialized);
       return true;
     } else {
-      failedReason = result;
+      // failedReason = result;
     }
     return false;
   }

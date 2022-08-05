@@ -10,7 +10,8 @@ class InitializedFailDialog extends StatelessWidget {
     final consumer = Provider.of<GazeTrackerProvider>(context);
     return CupertinoAlertDialog(
       title: const Text('Failed'),
-      content: Text(consumer.failedReason),
+      content: Text(
+          consumer.failedReason != null ? consumer.failedReason! : "unknown"),
       actions: <CupertinoDialogAction>[
         CupertinoDialogAction(
           /// This parameter indicates this action is the default,
