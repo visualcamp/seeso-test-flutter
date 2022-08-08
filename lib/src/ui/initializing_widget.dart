@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
-import 'package:test_flutter/src/ui/initialized_fail_dialog_widget.dart';
 
 class InitializingWidget extends StatelessWidget {
   const InitializingWidget({Key? key}) : super(key: key);
