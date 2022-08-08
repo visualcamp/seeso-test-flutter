@@ -6,17 +6,6 @@ import 'package:test_flutter/src/ui/initialized_fail_dialog_widget.dart';
 
 class InitializingWidget extends StatelessWidget {
   const InitializingWidget({Key? key}) : super(key: key);
-  void _initializing(BuildContext context) async {
-    final consumer = Provider.of<GazeTrackerProvider>(context, listen: false);
-    if (consumer.failedReason != null) {
-      showCupertinoDialog(
-          context: context,
-          builder: (_) => ChangeNotifierProvider<GazeTrackerProvider>.value(
-                value: consumer,
-                child: const InitializedFailDialog(),
-              ));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +26,6 @@ class InitializingWidget extends StatelessWidget {
           child: TextButton(
               onPressed: () {
                 consumer.initGazeTracker();
-                _initializing(context);
               },
               child: const Text(
                 'Initialize   GazzeTracker',

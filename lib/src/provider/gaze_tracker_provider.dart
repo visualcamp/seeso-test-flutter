@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
 import 'package:permission_handler/permission_handler.dart';
 import 'package:test_flutter/src/model/app_stage.dart';
+import 'package:test_flutter/src/model/gazetracker_method_string.dart';
 
 class GazeTrackerProvider with ChangeNotifier {
   dynamic state;
+  static const licenseKey = 'dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox';
   final _channel = const MethodChannel('samples.flutter.dev/tracker');
   String? failedReason;
   // gaze X,Y
@@ -34,11 +36,15 @@ class GazeTrackerProvider with ChangeNotifier {
 
   void setMessageHandler() {
     _channel.setMethodCallHandler((call) async {
+      debugPrint("setMessageHandler : ${call.method}");
       if (call.method == "setGazeXY") {
         final xy = call.arguments;
         _setGazeXY(xy[0] as double, xy[1] as double);
       } else if (call.method == "setCurrentState") {
         _setGazeTrackerStateString(call.arguments as String);
+      } else if (call.method == "getInitializedResult") {
+        debugPrint("argument : ${call.arguments}");
+        _getInitializedResult(call.arguments);
       }
     });
   }
@@ -58,9 +64,18 @@ class GazeTrackerProvider with ChangeNotifier {
     point_y = y;
   }
 
+  void _getInitializedResult(dynamic result) {
+    debugPrint("_getInitializedResult result = ${result[0]}");
+    if (result[0] == 1) {
+      _setTrackerState(GazeTrackerState.initialized);
+    } else {
+      failedReason = "Init Failed error code ${result[1]}";
+      notifyListeners();
+    }
+  }
+
   void _setGazeTrackerStateString(String stateString) {
     if (stateString == "initSuccess") {
-      _setTrackerState(GazeTrackerState.initialized);
     } else if (stateString == "startTracking") {
       _setTrackerState(GazeTrackerState.start);
     }
@@ -82,18 +97,15 @@ class GazeTrackerProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> initGazeTracker() async {
+  Future<void> initGazeTracker() async {
+    failedReason = null;
     _setTrackerState(GazeTrackerState.initializing);
-    final String result = await _channel.invokeMethod("startTracking",
-        {'license': 'dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox'});
+    final String result = await _channel.invokeMethod(
+        MethodString.initGazeTracker.convertedText, {
+      'license': licenseKey,
+      'useStatusOption': isUserOption ? "true" : "false"
+    });
     debugPrint('result : $result');
-    if (result == "initSuccess") {
-      _setTrackerState(GazeTrackerState.initialized);
-      return true;
-    } else {
-      // failedReason = result;
-    }
-    return false;
   }
 
   void _setTrackerState(GazeTrackerState state) {
@@ -109,6 +121,11 @@ class GazeTrackerProvider with ChangeNotifier {
   void stopTracking() {
     //_channel.invokeMethod("stopTracking");
     _setTrackerState(GazeTrackerState.initialized);
+  }
+
+  void chageIdleState() {
+    failedReason = null;
+    _setTrackerState(GazeTrackerState.idle);
   }
 
   Future<void> deinitGazeTracker() async {

@@ -3,10 +3,9 @@ import Flutter
 import SeeSo
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate, InitializationDelegate, GazeDelegate {
+@objc class AppDelegate: FlutterAppDelegate, InitializationDelegate, GazeDelegate, UserStatusDelegate {
   var gazeTracker : GazeTracker? = nil
   var trackerChannel : FlutterMethodChannel? = nil
-  let license : String = "dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox"
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -18,22 +17,32 @@ import SeeSo
     
     trackerChannel?.setMethodCallHandler({
       (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-      guard call.method == "startTracking" else {
-        result(FlutterMethodNotImplemented)
-        return
-      }
+//      guard call.method == "initGazeTracker" else {
+//        result(FlutterMethodNotImplemented)
+//        return
+//      }
+      
+      
       guard let map = call.arguments as? [String: String] else {
         return
       }
+      let methodName = call.method
+      if methodName.elementsEqual("initGazeTracker") {
+        self.initGazeTracker(result: result, license: map["license"]!, useOption: map["useOption"] == "true")
+      }
       
-      self.startLogic(result : result, license : map["license"]!)
+      
     })
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
   
-  func startLogic(result : FlutterResult, license : String){
-    GazeTracker.initGazeTracker(license: license, delegate: self)
+  func initGazeTracker(result : FlutterResult, license : String, useOption : Bool){
+    let option = UserStatusOption()
+    if useOption {
+      option.useAll()
+    }
+    GazeTracker.initGazeTracker(license: license, delegate: self, option: option)
     result("initializing...")
   }
   
@@ -41,10 +50,11 @@ import SeeSo
     print("hi")
     if tracker != nil {
       gazeTracker = tracker
-      trackerChannel?.invokeMethod("setCurrentState", arguments: "initSuccess")
+      trackerChannel?.invokeMethod("getInitializedResult", arguments: [1])
       gazeTracker?.gazeDelegate = self
+      gazeTracker?.userStatusDelegate = self
     }else {
-      trackerChannel?.invokeMethod("setCurrentState", arguments: "init Failed : " + error.description)
+      trackerChannel?.invokeMethod("getInitializedResult", arguments: [0, error.rawValue])
       print("hey")
     }
   }
@@ -56,5 +66,15 @@ import SeeSo
     }
   }
   
+  func onDrowsiness(timestamp: Int, isDrowsiness: Bool) {
+    
+  }
   
+  func onAttention(timestampBegin: Int, timestampEnd: Int, score: Double) {
+    
+  }
+  
+  func onBlink(timestamp: Int, isBlinkLeft: Bool, isBlinkRight: Bool, isBlink: Bool, eyeOpenness: Double) {
+    
+  }
 }
