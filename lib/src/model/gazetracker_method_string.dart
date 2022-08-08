@@ -4,7 +4,8 @@ enum MethodString {
   startTracking,
   stopTracking,
   startCalibration,
-  saveCalibrationData
+  saveCalibrationData,
+  startCollectSamples
 }
 
 extension MethodStringExtension on MethodString {
@@ -22,6 +23,8 @@ extension MethodStringExtension on MethodString {
         return "startCalibration";
       case MethodString.saveCalibrationData:
         return "saveCalibrationData";
+      case MethodString.startCollectSamples:
+        return "startCollectSamples";
     }
   }
 }

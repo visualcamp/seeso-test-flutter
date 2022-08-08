@@ -10,7 +10,7 @@ class CalibrationWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final consumer = Provider.of<GazeTrackerProvider>(context);
     return Container(
-        color: const Color.fromARGB(80, 0, 0, 0),
+        color: const Color.fromARGB(140, 0, 0, 0),
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -34,9 +34,9 @@ class CalibrationWidget extends StatelessWidget {
               child: CircularPercentIndicator(
                   radius: 24,
                   lineWidth: 2,
-                  animation: true,
+                  animation: false,
                   percent: consumer.progress,
-                  center: Text('${consumer.progress * 100}%',
+                  center: Text('${(consumer.progress * 100).round()}%',
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

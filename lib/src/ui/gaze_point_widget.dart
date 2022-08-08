@@ -12,8 +12,8 @@ class GazePointWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final consumer = Provider.of<GazeTrackerProvider>(context);
     return Positioned(
-        left: consumer.point_x - circleSize / 2.0,
-        top: consumer.point_y - circleSize / 2.0,
+        left: consumer.pointX - circleSize / 2.0,
+        top: consumer.pointY - circleSize / 2.0,
         child: Container(
             width: circleSize,
             height: circleSize,

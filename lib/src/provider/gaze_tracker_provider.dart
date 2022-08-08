@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
@@ -13,8 +11,8 @@ class GazeTrackerProvider with ChangeNotifier {
   final _channel = const MethodChannel('samples.flutter.dev/tracker');
   String? failedReason;
   // gaze X,Y
-  var point_x = 0.0;
-  var point_y = 0.0;
+  var pointX = 0.0;
+  var pointY = 0.0;
 
   // calibration
   double progress = 0.0;
@@ -37,14 +35,26 @@ class GazeTrackerProvider with ChangeNotifier {
   void setMessageHandler() {
     _channel.setMethodCallHandler((call) async {
       debugPrint("setMessageHandler : ${call.method}");
-      if (call.method == "setGazeXY") {
+      if (call.method == "onGaze") {
         final xy = call.arguments;
-        _setGazeXY(xy[0] as double, xy[1] as double);
-      } else if (call.method == "setCurrentState") {
-        _setGazeTrackerStateString(call.arguments as String);
+        _onGaze(xy[0] as double, xy[1] as double);
       } else if (call.method == "getInitializedResult") {
         debugPrint("argument : ${call.arguments}");
         _getInitializedResult(call.arguments);
+      } else if (call.method == "onStatus") {
+        _onTrackingStatus(call.arguments);
+      } else if (call.method == "onCalibrationNext") {
+        _onCalibrationNext(call.arguments);
+      } else if (call.method == "onCalibrationProgress") {
+        _onCalibrationProgress(call.arguments);
+      } else if (call.method == "onCalibrationFinished") {
+        _onCalibrationFinished();
+      } else if (call.method == "onDrowsiness") {
+        _onDrowsiness(call.arguments);
+      } else if (call.method == "onAttention") {
+        _onAttentions(call.arguments);
+      } else if (call.method == "onBlink") {
+        _onBlink(call.arguments);
       }
     });
   }
@@ -59,9 +69,60 @@ class GazeTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _setGazeXY(double x, double y) {
-    point_x = x;
-    point_y = y;
+  void _onAttentions(dynamic result) {
+    if (state != GazeTrackerState.calibrating) {
+      attention = result[0];
+      notifyListeners();
+    }
+  }
+
+  void _onDrowsiness(dynamic result) {
+    if (state != GazeTrackerState.calibrating) {
+      isDrowsiness = result[0];
+      notifyListeners();
+    }
+  }
+
+  void _onBlink(dynamic reuslt) {
+    if (state != GazeTrackerState.calibrating) {
+      isBlink = reuslt[0];
+      notifyListeners();
+    }
+  }
+
+  void _onTrackingStatus(dynamic result) {
+    if (result == null) {
+      _setTrackerState(GazeTrackerState.start);
+    } else {
+      _setTrackerState(GazeTrackerState.initialized);
+    }
+  }
+
+  void _onCalibrationNext(dynamic result) {
+    if (state != GazeTrackerState.calibrating) {
+      _setTrackerState(GazeTrackerState.calibrating);
+    }
+    caliX = result[0];
+    caliY = result[1];
+    notifyListeners();
+    _channel.invokeMethod(MethodString.startCollectSamples.convertedText);
+  }
+
+  void _onCalibrationProgress(dynamic result) {
+    progress = result[0];
+    notifyListeners();
+  }
+
+  void _onCalibrationFinished() {
+    hasCaliData = true;
+    _setTrackerState(GazeTrackerState.start);
+  }
+
+  void _onGaze(double x, double y) {
+    debugPrint("gaze x : $x, y: $y");
+    pointX = x;
+    pointY = y;
+    notifyListeners();
   }
 
   void _getInitializedResult(dynamic result) {
@@ -72,14 +133,6 @@ class GazeTrackerProvider with ChangeNotifier {
       failedReason = "Init Failed error code ${result[1]}";
       notifyListeners();
     }
-  }
-
-  void _setGazeTrackerStateString(String stateString) {
-    if (stateString == "initSuccess") {
-    } else if (stateString == "startTracking") {
-      _setTrackerState(GazeTrackerState.start);
-    }
-    debugPrint('state : $stateString');
   }
 
   Future<void> checkCamera() async {
@@ -108,63 +161,39 @@ class GazeTrackerProvider with ChangeNotifier {
     debugPrint('result : $result');
   }
 
+  void deinitGazeTracker() {
+    failedReason = null;
+    _channel.invokeMethod(MethodString.deinitGazeTracker.convertedText, {});
+    _setTrackerState(GazeTrackerState.idle);
+  }
+
+  void startTracking() {
+    _channel.invokeMethod(MethodString.startTracking.convertedText);
+  }
+
+  void stopTracking() {
+    _channel.invokeMethod(MethodString.stopTracking.convertedText);
+  }
+
   void _setTrackerState(GazeTrackerState state) {
     this.state = state;
     notifyListeners();
   }
 
-  void startTracking() {
-    _channel.invokeMethod("startTracking");
-    _setTrackerState(GazeTrackerState.start);
-  }
-
-  void stopTracking() {
-    //_channel.invokeMethod("stopTracking");
-    _setTrackerState(GazeTrackerState.initialized);
-  }
-
-  void chageIdleState() {
-    failedReason = null;
-    _setTrackerState(GazeTrackerState.idle);
-  }
-
-  Future<void> deinitGazeTracker() async {
-    _setTrackerState(GazeTrackerState.idle);
-  }
-
   void startCalibration() {
-    final pixelRatio = window.devicePixelRatio;
-    //Size in logical pixels
-    final logicalScreenSize = window.physicalSize / pixelRatio;
-    final logicalWidth = logicalScreenSize.width;
-    final logicalHeight = logicalScreenSize.height;
-    _setTrackerState(GazeTrackerState.calibrating);
-    Future.delayed(Duration(milliseconds: 1500), () {
-      caliX = logicalWidth / 2;
-      caliY = logicalHeight / 2;
-      notifyListeners();
-      _setProgress();
-    });
-  }
-
-  void _setProgress() {
-    Future.delayed(Duration(milliseconds: 1500), () {
-      progress = 0.5;
-      notifyListeners();
-      _finishedCalibration();
-    });
-  }
-
-  void _finishedCalibration() {
-    Future.delayed(Duration(milliseconds: 1500), () {
-      hasCaliData = true;
-      _setTrackerState(GazeTrackerState.start);
-    });
+    _channel.invokeMethod(
+        MethodString.startCalibration.convertedText, calibrationType);
   }
 
   void saveCalibrationData() {
     hasCaliData = false;
     savedCalibrationData = true;
+    _channel.invokeMethod(MethodString.saveCalibrationData.convertedText);
     notifyListeners();
+  }
+
+  void chageIdleState() {
+    failedReason = null;
+    _setTrackerState(GazeTrackerState.idle);
   }
 }
