@@ -91,12 +91,28 @@ lib/generated_plugin_registrant.dart
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
 **/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+
+
+# macOS
+**/Flutter/ephemeral/
+**/Pods/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral
+**/xcuserdata/
+
+# Coverage
+coverage/
+
+# Symbols
+app.*.symbols
+
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
@@ -340,5 +356,6 @@ fabric.properties
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,xcode,androidstudio,linux,windows,android,flutter
