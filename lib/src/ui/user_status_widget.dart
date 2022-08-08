@@ -72,7 +72,7 @@ class UserStatusExtendWidget extends StatelessWidget {
                   style: style,
                 ),
                 Text(
-                  "${consumer.attention * 100}%",
+                  "${(consumer.attention * 100).toInt()}%",
                   style: style,
                 )
               ],
