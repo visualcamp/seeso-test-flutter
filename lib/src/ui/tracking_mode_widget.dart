@@ -52,7 +52,7 @@ class TrackingModeWidget extends StatelessWidget {
             width: double.maxFinite,
             height: 20,
             color: const Color.fromARGB(0, 0, 0, 0)),
-        const Text('And also you can improve accuaracy through calibration',
+        const Text('And also you can improve accuracy through calibration',
             style: TextStyle(
                 color: Colors.white24,
                 fontSize: 10,
@@ -141,7 +141,7 @@ class TrackingModeWidget extends StatelessWidget {
                 )),
           ),
         const Text(
-            '(Calibration only can be done while gae tracking is activated)',
+            '(Calibration only can be done while gaze tracking is activated)',
             style: TextStyle(
                 color: Colors.white24,
                 fontSize: 10,
@@ -149,7 +149,7 @@ class TrackingModeWidget extends StatelessWidget {
         Container(
           height: 10,
         ),
-        if (consumer.isUserOption) const UserSatatusWidget(),
+        if (consumer.isUserOption) const UserStatusWidget(),
       ],
     );
   }

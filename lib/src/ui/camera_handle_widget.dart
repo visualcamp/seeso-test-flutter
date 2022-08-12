@@ -10,7 +10,7 @@ class CameraHandleWidget extends StatelessWidget {
     return Column(
       children: <Widget>[
         const Text(
-          'We must have cmaera permission!',
+          'We must have camera permission!',
           style: TextStyle(
               color: Colors.white24,
               fontSize: 10,
@@ -25,7 +25,7 @@ class CameraHandleWidget extends StatelessWidget {
                     .handleCamera();
               },
               child: const Text(
-                'Click here to request cmaera authorization',
+                'Click here to request camera authorization',
                 style: TextStyle(color: Colors.white),
               )),
         ),

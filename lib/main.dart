@@ -7,7 +7,7 @@ import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
 
 // model
 import 'package:test_flutter/src/model/app_stage.dart';
-import 'package:test_flutter/src/provider/user_extand_provider.dart';
+import 'package:test_flutter/src/provider/user_extend_provider.dart';
 import 'package:test_flutter/src/ui/calibration_widget.dart';
 
 // widget
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(
           create: (BuildContext context) => GazeTrackerProvider()),
       ChangeNotifierProvider(
-          create: (BuildContext context) => UserExtandProvider())
+          create: (BuildContext context) => UserExtendProvider())
     ], child: const AppView()));
   }
 }
@@ -60,8 +60,8 @@ class _AppViewState extends State<AppView> {
                 children: <Widget>[
                   const TitleWidget(),
                   Consumer<GazeTrackerProvider>(
-                    builder: (context, gazetracker, child) {
-                      switch (gazetracker.state) {
+                    builder: (context, gazeTracker, child) {
+                      switch (gazeTracker.state) {
                         case GazeTrackerState.first:
                           return const CameraHandleWidget();
                         case GazeTrackerState.idle:

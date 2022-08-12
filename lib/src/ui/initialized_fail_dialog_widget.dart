@@ -18,7 +18,7 @@ class InitializedFailDialog extends StatelessWidget {
           /// and turns the action's text to bold text.
           isDefaultAction: true,
           onPressed: () {
-            consumer.chageIdleState();
+            consumer.changeIdleState();
           },
           child: const Text('Ok'),
         ),

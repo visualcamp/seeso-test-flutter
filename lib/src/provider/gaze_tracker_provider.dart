@@ -83,9 +83,9 @@ class GazeTrackerProvider with ChangeNotifier {
     }
   }
 
-  void _onBlink(dynamic reuslt) {
+  void _onBlink(dynamic result) {
     if (state != GazeTrackerState.calibrating) {
-      isBlink = reuslt[0];
+      isBlink = result[0];
       notifyListeners();
     }
   }
@@ -192,7 +192,7 @@ class GazeTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void chageIdleState() {
+  void changeIdleState() {
     failedReason = null;
     _setTrackerState(GazeTrackerState.idle);
   }

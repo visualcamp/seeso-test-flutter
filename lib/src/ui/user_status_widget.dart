@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_flutter/src/provider/gaze_tracker_provider.dart';
-import 'package:test_flutter/src/provider/user_extand_provider.dart';
+import 'package:test_flutter/src/provider/user_extend_provider.dart';
 
-class UserSatatusWidget extends StatelessWidget {
-  const UserSatatusWidget({Key? key}) : super(key: key);
+class UserStatusWidget extends StatelessWidget {
+  const UserStatusWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final extandConsumer = Provider.of<UserExtandProvider>(context);
+    final extendConsumer = Provider.of<UserExtendProvider>(context);
     const style = TextStyle(
         color: Colors.white,
         decoration: TextDecoration.none,
@@ -22,11 +22,11 @@ class UserSatatusWidget extends StatelessWidget {
           color: Colors.white12,
           child: TextButton.icon(
             onPressed: () {
-              extandConsumer.changeIsExtand();
+              extendConsumer.changeIsExtend();
             },
             label: const Text('User Options Info', style: style),
             // ignore: dead_code
-            icon: extandConsumer.isExtand
+            icon: extendConsumer.isExtend
                 ? const Icon(
                     Icons.keyboard_arrow_up_sharp,
                     color: Colors.white,
@@ -42,7 +42,7 @@ class UserSatatusWidget extends StatelessWidget {
         height: 1,
         color: Colors.white24,
       ),
-      if (extandConsumer.isExtand) const UserStatusExtendWidget()
+      if (extendConsumer.isExtend) const UserStatusExtendWidget()
     ]);
   }
 }
