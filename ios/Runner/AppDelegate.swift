@@ -90,7 +90,7 @@ extension AppDelegate: StatusDelegate {
 extension AppDelegate: GazeDelegate {
     func onGaze(gazeInfo: GazeInfo) {
         if gazeInfo.trackingState == .SUCCESS {
-            print("\(#function)")
+            // print("\(#function)")
             trackerChannel?.invokeMethod("onGaze", arguments: [gazeInfo.x, gazeInfo.y])
         }
     }

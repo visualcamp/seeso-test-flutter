@@ -16,8 +16,8 @@ class TitleWidget extends StatelessWidget {
                     style: TextStyle(
                         color: Colors.white, decoration: TextDecoration.none),
                   )),
-              Divider(
-                color: Colors.grey[800],
+              const Divider(
+                color: Colors.grey,
               ),
               const Padding(
                 padding: EdgeInsets.all(20),

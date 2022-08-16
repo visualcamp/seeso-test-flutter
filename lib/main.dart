@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
@@ -50,42 +51,51 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final consumer = Provider.of<GazeTrackerProvider>(context);
-    return Stack(
-      children: <Widget>[
-        SafeArea(
-          child: Container(
-              color: Colors.white10,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const TitleWidget(),
-                  Consumer<GazeTrackerProvider>(
-                    builder: (context, gazeTracker, child) {
-                      switch (gazeTracker.state) {
-                        case GazeTrackerState.first:
-                          return const CameraHandleWidget();
-                        case GazeTrackerState.idle:
-                          return const InitializingWidget();
-                        case GazeTrackerState.initialized:
-                          return const InitializedWidget();
-                        case GazeTrackerState.start:
-                        case GazeTrackerState.calibrating:
-                          return const TrackingModeWidget();
-                        default:
-                          return const InitializingWidget();
-                      }
-                    },
-                  ),
-                ],
-              )),
-        ),
-        if (consumer.state == GazeTrackerState.start) const GazePointWidget(),
-        if (consumer.state == GazeTrackerState.initializing)
-          const LoadingCircleWidget(),
-        if (consumer.state == GazeTrackerState.calibrating)
-          const CalibrationWidget(),
-        if (consumer.failedReason != null) const InitializedFailDialog()
-      ],
-    );
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Stack(
+          children: <Widget>[
+            Scaffold(
+              backgroundColor: Colors.white10,
+              resizeToAvoidBottomInset: false,
+              body: SafeArea(
+                  child: SingleChildScrollView(
+                      child: SafeArea(
+                child: Container(
+                    color: Colors.white10,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const TitleWidget(),
+                        Consumer<GazeTrackerProvider>(
+                          builder: (context, gazeTracker, child) {
+                            switch (gazeTracker.state) {
+                              case GazeTrackerState.first:
+                                return const CameraHandleWidget();
+                              case GazeTrackerState.idle:
+                                return const InitializingWidget();
+                              case GazeTrackerState.initialized:
+                                return const InitializedWidget();
+                              case GazeTrackerState.start:
+                              case GazeTrackerState.calibrating:
+                                return const TrackingModeWidget();
+                              default:
+                                return const InitializingWidget();
+                            }
+                          },
+                        ),
+                      ],
+                    )),
+              ))),
+            ),
+            if (consumer.state == GazeTrackerState.start)
+              const GazePointWidget(),
+            if (consumer.state == GazeTrackerState.initializing)
+              const LoadingCircleWidget(),
+            if (consumer.state == GazeTrackerState.calibrating)
+              const CalibrationWidget(),
+            if (consumer.failedReason != null) const InitializedFailDialog()
+          ],
+        ));
   }
 }

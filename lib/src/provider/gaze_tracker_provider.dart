@@ -34,12 +34,12 @@ class GazeTrackerProvider with ChangeNotifier {
 
   void setMessageHandler() {
     _channel.setMethodCallHandler((call) async {
-      debugPrint("setMessageHandler : ${call.method}");
+      // debugPrint("setMessageHandler : ${call.method}");
       if (call.method == "onGaze") {
         final xy = call.arguments;
         _onGaze(xy[0] as double, xy[1] as double);
       } else if (call.method == "getInitializedResult") {
-        debugPrint("argument : ${call.arguments}");
+        // debugPrint("argument : ${call.arguments}");
         _getInitializedResult(call.arguments);
       } else if (call.method == "onStatus") {
         _onTrackingStatus(call.arguments);
@@ -119,7 +119,7 @@ class GazeTrackerProvider with ChangeNotifier {
   }
 
   void _onGaze(double x, double y) {
-    debugPrint("gaze x : $x, y: $y");
+    // debugPrint("gaze x : $x, y: $y");
     pointX = x;
     pointY = y;
     notifyListeners();
