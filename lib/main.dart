@@ -53,40 +53,35 @@ class _AppViewState extends State<AppView> {
     final consumer = Provider.of<GazeTrackerProvider>(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Stack(
+        child: SafeArea(
+            child: Stack(
           children: <Widget>[
-            Scaffold(
-              backgroundColor: Colors.white10,
-              resizeToAvoidBottomInset: false,
-              body: SafeArea(
-                  child: SingleChildScrollView(
-                      child: SafeArea(
-                child: Container(
-                    color: Colors.white10,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const TitleWidget(),
-                        Consumer<GazeTrackerProvider>(
-                          builder: (context, gazeTracker, child) {
-                            switch (gazeTracker.state) {
-                              case GazeTrackerState.first:
-                                return const CameraHandleWidget();
-                              case GazeTrackerState.idle:
-                                return const InitializingWidget();
-                              case GazeTrackerState.initialized:
-                                return const InitializedWidget();
-                              case GazeTrackerState.start:
-                              case GazeTrackerState.calibrating:
-                                return const TrackingModeWidget();
-                              default:
-                                return const InitializingWidget();
-                            }
-                          },
-                        ),
-                      ],
-                    )),
-              ))),
+            SingleChildScrollView(
+              child: Container(
+                  color: Colors.white10,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const TitleWidget(),
+                      Consumer<GazeTrackerProvider>(
+                        builder: (context, gazeTracker, child) {
+                          switch (gazeTracker.state) {
+                            case GazeTrackerState.first:
+                              return const CameraHandleWidget();
+                            case GazeTrackerState.idle:
+                              return const InitializingWidget();
+                            case GazeTrackerState.initialized:
+                              return const InitializedWidget();
+                            case GazeTrackerState.start:
+                            case GazeTrackerState.calibrating:
+                              return const TrackingModeWidget();
+                            default:
+                              return const InitializingWidget();
+                          }
+                        },
+                      ),
+                    ],
+                  )),
             ),
             if (consumer.state == GazeTrackerState.start)
               const GazePointWidget(),
@@ -96,6 +91,6 @@ class _AppViewState extends State<AppView> {
               const CalibrationWidget(),
             if (consumer.failedReason != null) const InitializedFailDialog()
           ],
-        ));
+        )));
   }
 }
