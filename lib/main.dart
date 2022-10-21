@@ -55,28 +55,30 @@ class _AppViewState extends State<AppView> {
         SafeArea(
           child: Container(
               color: Colors.white10,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const TitleWidget(),
-                  Consumer<GazeTrackerProvider>(
-                    builder: (context, gazetracker, child) {
-                      switch (gazetracker.state) {
-                        case GazeTrackerState.first:
-                          return const CameraHandleWidget();
-                        case GazeTrackerState.idle:
-                          return const InitializingWidget();
-                        case GazeTrackerState.initialized:
-                          return const InitializedWidget();
-                        case GazeTrackerState.start:
-                        case GazeTrackerState.calibrating:
-                          return const TrackingModeWidget();
-                        default:
-                          return const InitializingWidget();
-                      }
-                    },
-                  ),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const TitleWidget(),
+                      Consumer<GazeTrackerProvider>(
+                        builder: (context, gazetracker, child) {
+                          switch (gazetracker.state) {
+                            case GazeTrackerState.first:
+                              return const CameraHandleWidget();
+                            case GazeTrackerState.idle:
+                              return const InitializingWidget();
+                            case GazeTrackerState.initialized:
+                              return const InitializedWidget();
+                            case GazeTrackerState.start:
+                            case GazeTrackerState.calibrating:
+                              return const TrackingModeWidget();
+                            default:
+                              return const InitializingWidget();
+                          }
+                        },
+                      ),
+                    ]),
               )),
         ),
         if (consumer.state == GazeTrackerState.start) const GazePointWidget(),

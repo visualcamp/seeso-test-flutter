@@ -14,7 +14,9 @@ class TitleWidget extends StatelessWidget {
                   child: const Text(
                     'SeeSo Sample',
                     style: TextStyle(
-                        color: Colors.white, decoration: TextDecoration.none),
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                        fontSize: 24),
                   )),
               Divider(
                 color: Colors.grey[800],

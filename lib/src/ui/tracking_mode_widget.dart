@@ -98,12 +98,12 @@ class TrackingModeWidget extends StatelessWidget {
                   1: Text(" ONE_POINT ",
                       style: TextStyle(
                           color: Colors.white24,
-                          fontSize: 12,
+                          fontSize: 10,
                           decoration: TextDecoration.none)),
                   5: Text(" FIVE_POINT ",
                       style: TextStyle(
                           color: Colors.white24,
-                          fontSize: 12,
+                          fontSize: 10,
                           decoration: TextDecoration.none)),
                 },
                 onValueChanged: (newValue) {
