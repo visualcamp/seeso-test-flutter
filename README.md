@@ -37,14 +37,17 @@ In 2021, SeeSo was recognized for its innovative technology and won GLOMO Award 
 
 ## How to run (Android)
 1. Clone or download this project.
-2. Move the `gazetracker-release.aar` and `libgaze-release.aar` files in the "android/app/libs" path.
+2. Run this command `flutter pub get` in terminal.
+3. Move the `gazetracker-release.aar` and `libgaze-release.aar` files in the "android/app/libs" path.
   ![image/android.png](image/android.png)
+4. run Android device.
 
 ## How to run (iOS)
 1. Clone or download this project.
-
-2. Move the `SeeSo.xcframework` file in the "ios/Runner" path.
+2. Run this command `flutter pub get` in terminal.
+3. Move the `SeeSo.xcframework` file in the "ios/Runner" path.
   ![image/android.png](image/ios.png)
+4. run iOS device.
 
 ## Contact Us
 If you have any problems, feel free to [contact us](https://seeso.io/Contact-Us) 
