@@ -99,8 +99,8 @@ class MainActivity: FlutterActivity(), InitializationCallback, GazeCallback, Sta
 
     override fun onGaze(gazeInfo: GazeInfo?) {
         if (gazeInfo != null && gazeInfo.trackingState == TrackingState.SUCCESS) {
-            val x = gazeInfo.gazePoint.x.toDouble() / density
-            val y = gazeInfo.gazePoint.y.toDouble() / density
+            val x = gazeInfo.x.toDouble() / density
+            val y = gazeInfo.y.toDouble() / density
             Handler(Looper.getMainLooper()).post {
                 methodChannel?.invokeMethod("onGaze", arrayListOf<Double>(x,y))
             }
